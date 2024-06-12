@@ -36,9 +36,7 @@ public enum JSONTokenType {
 	
 	static {
 		for (JSONTokenType token : values()) {
-			for (char c : token.chars) {
-				REG.put(c, token);
-			}
+			if (token.character != 0) REG.put(token.character, token);
 			
 			for (JSONTokenType next : values()) {
 				token.results.put(next, JSONResult.INVALID);
@@ -79,10 +77,14 @@ public enum JSONTokenType {
 	private final Map<JSONTokenType, JSONResult> results = new HashMap<>();
 	private final List<JSONTokenType> extend = new ArrayList<>();
 	
-	private final char[] chars;
+	private final char character;
 	
-	private JSONTokenType(char... chars) {
-		this.chars = chars;
+	private JSONTokenType(char character) {
+		this.character = character;
+	}
+	
+	private JSONTokenType() {
+		this((char) 0);
 	}
 	
 	public JSONResult expects(JSONTokenType next) {
@@ -99,6 +101,10 @@ public enum JSONTokenType {
 		}
 		
 		return false;
+	}
+	
+	public char getChar() {
+		return character;
 	}
 	
 	private void extend(JSONTokenType... tokens) {

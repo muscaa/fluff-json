@@ -4,9 +4,11 @@ import fluff.json.JSON;
 import fluff.json.JSONArray;
 import fluff.json.JSONException;
 import fluff.json.JSONObject;
+import fluff.json.converter.JSONConverters;
 import fluff.json.deserializer.lexer.JSONLexer;
 import fluff.json.deserializer.lexer.JSONToken;
 import fluff.json.deserializer.lexer.JSONTokenType;
+import fluff.json.deserializer.readers.StringJSONReader;
 
 public class JSONParser {
 	
@@ -26,15 +28,9 @@ public class JSONParser {
 		String value = token.getValue();
 		
 		return switch (token.getType()) {
-			case STRING -> value;
-			case NUMBER -> {
-	            if (value.contains(".")) {
-	                yield Double.parseDouble(value);
-	            } else {
-	                yield Integer.parseInt(value);
-	            }
-			}
-			case BOOLEAN -> Boolean.parseBoolean(value);
+			case STRING -> JSONConverters.getDeserializer(String.class).deserializeJSON(new StringJSONReader(value));
+			case NUMBER -> JSONConverters.getDeserializer(Number.class).deserializeJSON(new StringJSONReader(value));
+			case BOOLEAN -> JSONConverters.getDeserializer(Boolean.class).deserializeJSON(new StringJSONReader(value));
 			case NULL -> null;
 			case OPEN_CURLY -> parseObject();
 			case OPEN_SQUARE -> parseArray();

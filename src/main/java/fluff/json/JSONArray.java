@@ -3,24 +3,26 @@ package fluff.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import fluff.json.deserializer.JSONDeserializer;
+import fluff.json.deserializer.readers.StringJSONReader;
+import fluff.json.serializer.AbstractJSONWriter;
+import fluff.json.serializer.JSONSerializer;
+import fluff.json.serializer.writers.InlineJSONWriter;
+
 public class JSONArray extends JSON {
 	
 	private final List<Object> list = new ArrayList<>();
 	
-	public <V> V get(Class<V> clazz, int index) {
+	public <V> V get(int index) {
 		return (V) list.get(index);
 	}
 	
-	public boolean getBoolean(int index) {
-		return get(boolean.class, index);
+	public <V> V get(Class<V> clazz, int index) {
+		return get(index);
 	}
 	
 	public byte getByte(int index) {
 		return get(Number.class, index).byteValue();
-	}
-	
-	public char getChar(int index) {
-		return get(char.class, index);
 	}
 	
 	public short getShort(int index) {
@@ -43,22 +45,19 @@ public class JSONArray extends JSON {
 		return get(Number.class, index).doubleValue();
 	}
 	
-	public String getString(int index) {
-		return get(String.class, index);
+	public <V> V get(JSONDeserializer<V> deserializer, int index) {
+		return deserializer.deserializeJSON(new StringJSONReader(get(String.class, index)));
 	}
-	
-	public JSONObject getObject(int index) {
-		return get(JSONObject.class, index);
-	}
-	
-	public JSONArray getArray(int index) {
-		return get(JSONArray.class, index);
-	}
-	
-	// more getters
 	
 	public JSONArray set(int index, Object value) {
 		list.set(index, value);
+		return this;
+	}
+	
+	public <V> JSONArray set(int index, JSONSerializer<V> serializer, V value) {
+		AbstractJSONWriter out = new InlineJSONWriter();
+		serializer.serializeJSON(value, out);
+		set(index, out.getResult());
 		return this;
 	}
 	
@@ -67,8 +66,22 @@ public class JSONArray extends JSON {
 		return this;
 	}
 	
+	public <V> JSONArray add(JSONSerializer<V> serializer, V value) {
+		AbstractJSONWriter out = new InlineJSONWriter();
+		serializer.serializeJSON(value, out);
+		add(out.getResult());
+		return this;
+	}
+	
 	public JSONArray add(int index, Object value) {
 		list.add(index, value);
+		return this;
+	}
+	
+	public <V> JSONArray add(int index, JSONSerializer<V> serializer, V value) {
+		AbstractJSONWriter out = new InlineJSONWriter();
+		serializer.serializeJSON(value, out);
+		add(index, out.getResult());
 		return this;
 	}
 	

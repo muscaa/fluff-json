@@ -1,11 +1,48 @@
 package fluff.json.utils;
 
+import fluff.json.JSONException;
+import fluff.json.converter.JSONConverters;
+import fluff.json.deserializer.AbstractJSONReader;
+import fluff.json.deserializer.JSONParser;
+import fluff.json.serializer.AbstractJSONWriter;
+import fluff.json.serializer.JSONSerializer;
+
 public class JSONUtils {
+	
+	public static AbstractJSONWriter serialize(Object value, AbstractJSONWriter out) {
+		if (value == null) {
+			out.write(null);
+			return out;
+		}
+		
+		if (value instanceof JSONSerializer s) {
+			s.serializeJSON(value, out);
+			return out;
+		}
+		
+		JSONSerializer s = JSONConverters.getSerializer(value);
+		if (s != null) {
+			s.serializeJSON(value, out);
+			return out;
+		}
+		
+		out.writeQuoted(String.valueOf(value));
+		
+		return out;
+	}
+	
+	public static <V> V deserialize(AbstractJSONReader in) {
+		try {
+			JSONParser parser = new JSONParser(in);
+			return (V) parser.parse();
+		} catch (JSONException e) {}
+		return null;
+	}
 	
     public static boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }
-
+    
     public static boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }

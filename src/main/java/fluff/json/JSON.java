@@ -1,19 +1,19 @@
 package fluff.json;
 
-import fluff.json.deserializer.JSONDeserializer;
-import fluff.json.serializer.JSONSerializer;
+import fluff.json.deserializer.readers.StringJSONReader;
 import fluff.json.serializer.writers.InlineJSONWriter;
 import fluff.json.serializer.writers.PrettyJSONWriter;
+import fluff.json.utils.JSONUtils;
 
 public abstract class JSON {
 	
 	@Override
 	public String toString() {
-		return JSONSerializer.serialize(this, new InlineJSONWriter()).getResult();
+		return JSONUtils.serialize(this, new InlineJSONWriter()).getResult();
 	}
 	
 	public String toPrettyString() {
-		return JSONSerializer.serialize(this, new PrettyJSONWriter()).getResult();
+		return JSONUtils.serialize(this, new PrettyJSONWriter()).getResult();
 	}
 	
 	public static JSONObject object() {
@@ -21,7 +21,7 @@ public abstract class JSON {
 	}
 	
 	public static JSONObject object(String json) {
-		return JSONDeserializer.deserialize(json);
+		return JSONUtils.deserialize(new StringJSONReader(json));
 	}
 	
 	public static JSONArray array() {
@@ -29,6 +29,6 @@ public abstract class JSON {
 	}
 	
 	public static JSONArray array(String json) {
-		return JSONDeserializer.deserialize(json);
+		return JSONUtils.deserialize(new StringJSONReader(json));
 	}
 }

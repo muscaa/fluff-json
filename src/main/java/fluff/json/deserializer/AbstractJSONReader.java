@@ -4,6 +4,8 @@ public abstract class AbstractJSONReader {
 	
 	protected int current = 0;
 	
+	public abstract String text();
+	
 	public abstract char get(int index);
 	
 	public abstract int size();
@@ -25,18 +27,19 @@ public abstract class AbstractJSONReader {
 	}
 	
 	public char next() {
-		return get(++current);
+		return get(set(current() + 1));
 	}
 	
 	public char back() {
-		return get(--current);
+		return get(set(current() - 1));
 	}
 	
 	public char peek() {
-		return get(current);
+		return get(current());
 	}
 	
-	public void set(int index) {
+	public int set(int index) {
 		current = index;
+		return current;
 	}
 }

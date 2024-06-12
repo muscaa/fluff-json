@@ -3,24 +3,26 @@ package fluff.json;
 import java.util.HashMap;
 import java.util.Map;
 
+import fluff.json.deserializer.JSONDeserializer;
+import fluff.json.deserializer.readers.StringJSONReader;
+import fluff.json.serializer.AbstractJSONWriter;
+import fluff.json.serializer.JSONSerializer;
+import fluff.json.serializer.writers.InlineJSONWriter;
+
 public class JSONObject extends JSON {
 	
 	private final Map<String, Object> map = new HashMap<>();
 	
-	public <V> V get(Class<V> clazz, String key) {
+	public <V> V get(String key) {
 		return (V) map.get(key);
 	}
 	
-	public boolean getBoolean(String key) {
-		return get(boolean.class, key);
+	public <V> V get(Class<V> clazz, String key) {
+		return get(key);
 	}
 	
 	public byte getByte(String key) {
 		return get(Number.class, key).byteValue();
-	}
-	
-	public char getChar(String key) {
-		return get(char.class, key);
 	}
 	
 	public short getShort(String key) {
@@ -43,22 +45,19 @@ public class JSONObject extends JSON {
 		return get(Number.class, key).doubleValue();
 	}
 	
-	public String getString(String key) {
-		return get(String.class, key);
+	public <V> V get(JSONDeserializer<V> deserializer, String key) {
+		return deserializer.deserializeJSON(new StringJSONReader(get(String.class, key)));
 	}
-	
-	public JSONObject getObject(String key) {
-		return get(JSONObject.class, key);
-	}
-	
-	public JSONArray getArray(String key) {
-		return get(JSONArray.class, key);
-	}
-	
-	// more getters for custom classes or deserializers or something
 	
 	public JSONObject put(String key, Object value) {
 		map.put(key, value);
+		return this;
+	}
+	
+	public <V> JSONObject put(String key, JSONSerializer<V> serializer, V value) {
+		AbstractJSONWriter out = new InlineJSONWriter();
+		serializer.serializeJSON(value, out);
+		put(key, out.getResult());
 		return this;
 	}
 	

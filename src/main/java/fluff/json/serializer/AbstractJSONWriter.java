@@ -1,16 +1,13 @@
 package fluff.json.serializer;
 
+import fluff.json.deserializer.lexer.JSONTokenType;
 import fluff.json.utils.JSONUtils;
 
 public abstract class AbstractJSONWriter {
 	
 	protected final StringBuilder out = new StringBuilder();
 	
-	public abstract void begin(String prefix);
-	
-	public abstract void mark(String infix);
-	
-	public abstract void end(String suffix);
+	public abstract void token(JSONTokenType type);
 	
 	public void write(Object value) {
 		out.append(value);

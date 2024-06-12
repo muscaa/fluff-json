@@ -2,26 +2,28 @@ package fluff.json.serializer.serializers;
 
 import java.util.Map;
 
+import fluff.json.deserializer.lexer.JSONTokenType;
 import fluff.json.serializer.AbstractJSONWriter;
 import fluff.json.serializer.JSONSerializer;
+import fluff.json.utils.JSONUtils;
 
 public class MapJSONSerializer implements JSONSerializer<Map<String, ?>> {
 	
 	@Override
 	public void serializeJSON(Map<String, ?> value, AbstractJSONWriter out) {
-		out.begin("{");
+		out.token(JSONTokenType.OPEN_CURLY);
 		
 		boolean first = true;
 		for (Map.Entry<String, ?> e : value.entrySet()) {
-			if (!first) out.mark(",");
+			if (!first) out.token(JSONTokenType.COMMA);
 			else first = false;
 			
 			out.writeQuoted(e.getKey());
-			out.write(": ");
+			out.token(JSONTokenType.COLON);
 			
-			JSONSerializer.serialize(e.getValue(), out);
+			JSONUtils.serialize(e.getValue(), out);
 		}
 		
-		out.end("}");
+		out.token(JSONTokenType.CLOSE_CURLY);
 	}
 }

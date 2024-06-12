@@ -11,6 +11,11 @@ public class StringJSONReader extends AbstractJSONReader {
 	}
 	
 	@Override
+	public String text() {
+		return text;
+	}
+	
+	@Override
 	public char get(int index) {
 		return text.charAt(index);
 	}
