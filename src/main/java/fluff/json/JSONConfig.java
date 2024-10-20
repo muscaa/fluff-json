@@ -18,7 +18,7 @@ public class JSONConfig {
     /**
      * The colon character(s) used for pretty-printing JSON.
      */
-    public static String PRETTY_COLON = " : ";
+    public static String PRETTY_COLON = ": ";
     
     /**
      * The comma character(s) used for pretty-printing JSON.

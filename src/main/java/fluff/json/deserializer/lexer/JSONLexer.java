@@ -136,7 +136,7 @@ public class JSONLexer {
             if (!in.hasNext(4)) throw new JSONException("Invalid unicode escape sequence");
             
             StringBuilder hex = new StringBuilder();
-            hex.append(in.next());
+            hex.append(in.peek());
             hex.append(in.next());
             hex.append(in.next());
             hex.append(in.next());
