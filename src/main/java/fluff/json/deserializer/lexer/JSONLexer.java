@@ -141,7 +141,7 @@ public class JSONLexer {
             hex.append(in.next());
             hex.append(in.next());
             
-            sb.append(Integer.parseInt(hex.toString(), 16));
+            sb.append((char) Integer.parseInt(hex.toString(), 16));
         }
                 
         return sb.toString();
