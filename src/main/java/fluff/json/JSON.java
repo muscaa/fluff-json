@@ -1,5 +1,11 @@
 package fluff.json;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
+import fluff.functions.gen.Func;
 import fluff.json.deserializer.readers.StringJSONReader;
 import fluff.json.serializer.writers.InlineJSONWriter;
 import fluff.json.serializer.writers.PrettyJSONWriter;
@@ -31,12 +37,33 @@ public abstract class JSON {
     }
     
     /**
-     * Creates a new {@link JSONObject}.
+     * Creates a new {@link JSONObject} with a hash map.
      *
-     * @return a new JSONObject
+     * @return a new JSONObject with a hash map
      */
     public static JSONObject object() {
-        return new JSONObject();
+        return new JSONObject(new HashMap<>());
+    }
+    
+	/**
+	 * Creates a new {@link JSONObject} with a linked hash map.
+	 *
+	 * @return a new JSONObject with a linked hash map
+	 */
+    public static JSONObject linkedObject() {
+        return new JSONObject(new LinkedHashMap<>());
+    }
+    
+    /**
+     * Parses a JSON string into a {@link JSONObject}.
+     *
+     * @param objectFunc the function to create a new JSON object
+     * @param arrayFunc the function to create a new JSON array
+     * @param json the JSON string to parse
+     * @return the parsed JSONObject
+     */
+    public static JSONObject object(Func<JSONObject> objectFunc, Func<JSONArray> arrayFunc, String json) {
+        return JSONUtils.deserialize(objectFunc, arrayFunc, new StringJSONReader(json));
     }
     
     /**
@@ -46,16 +73,37 @@ public abstract class JSON {
      * @return the parsed JSONObject
      */
     public static JSONObject object(String json) {
-        return JSONUtils.deserialize(new StringJSONReader(json));
+        return object(JSON::object, JSON::array, json);
     }
     
     /**
-     * Creates a new {@link JSONArray}.
+     * Creates a new {@link JSONArray} with an array list.
      *
-     * @return a new JSONArray
+     * @return a new JSONArray with an array list
      */
     public static JSONArray array() {
-        return new JSONArray();
+        return new JSONArray(new ArrayList<>());
+    }
+    
+	/**
+	 * Creates a new {@link JSONArray} with a linked list.
+	 *
+	 * @return a new JSONArray with a linked list
+	 */
+	public static JSONArray linkedArray() {
+		return new JSONArray(new LinkedList<>());
+	}
+    
+    /**
+     * Parses a JSON string into a {@link JSONArray}.
+     *
+     * @param objectFunc the function to create a new JSON object
+     * @param arrayFunc the function to create a new JSON array
+     * @param json the JSON string to parse
+     * @return the parsed JSONArray
+     */
+    public static JSONArray array(Func<JSONObject> objectFunc, Func<JSONArray> arrayFunc, String json) {
+        return JSONUtils.deserialize(objectFunc, arrayFunc, new StringJSONReader(json));
     }
     
     /**
@@ -65,6 +113,6 @@ public abstract class JSON {
      * @return the parsed JSONArray
      */
     public static JSONArray array(String json) {
-        return JSONUtils.deserialize(new StringJSONReader(json));
+        return array(JSON::object, JSON::array, json);
     }
 }

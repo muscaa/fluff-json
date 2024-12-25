@@ -1,6 +1,6 @@
 package fluff.json.deserializer;
 
-import fluff.json.JSON;
+import fluff.functions.gen.Func;
 import fluff.json.JSONArray;
 import fluff.json.JSONException;
 import fluff.json.JSONObject;
@@ -16,6 +16,8 @@ import fluff.json.deserializer.readers.StringJSONReader;
  */
 public class JSONParser {
     
+	private final Func<JSONObject> objectFunc;
+	private final Func<JSONArray> arrayFunc;
     private final JSONLexer lexer;
     
     private JSONToken token;
@@ -23,9 +25,13 @@ public class JSONParser {
     /**
      * Constructs a JSONParser with the specified JSON reader.
      *
+     * @param objectFunc the function to create a new JSON object
+     * @param arrayFunc the function to create a new JSON array
      * @param in the JSON reader to read from
      */
-    public JSONParser(AbstractJSONReader in) {
+    public JSONParser(Func<JSONObject> objectFunc, Func<JSONArray> arrayFunc, AbstractJSONReader in) {
+    	this.objectFunc = objectFunc;
+    	this.arrayFunc = arrayFunc;
         this.lexer = new JSONLexer(in);
     }
     
@@ -54,7 +60,7 @@ public class JSONParser {
     }
     
     private JSONObject parseObject() throws JSONException {
-        JSONObject object = JSON.object();
+        JSONObject object = objectFunc.invoke();
         
         expect(peek(), JSONTokenType.OPEN_CURLY);
         while (hasNext()) {
@@ -74,7 +80,7 @@ public class JSONParser {
     }
     
     private JSONArray parseArray() throws JSONException {
-        JSONArray array = JSON.array();
+        JSONArray array = arrayFunc.invoke();
         
         expect(peek(), JSONTokenType.OPEN_SQUARE);
         while (hasNext()) {

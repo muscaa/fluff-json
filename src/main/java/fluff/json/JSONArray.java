@@ -1,8 +1,9 @@
 package fluff.json;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import fluff.functions.gen.obj._int.Func2ObjInt;
 import fluff.json.deserializer.JSONDeserializer;
 import fluff.json.deserializer.readers.StringJSONReader;
 import fluff.json.serializer.AbstractJSONWriter;
@@ -15,7 +16,16 @@ import fluff.json.serializer.writers.InlineJSONWriter;
  */
 public class JSONArray extends JSON {
     
-    private final List<Object> list = new ArrayList<>();
+    protected final List<Object> list;
+    
+    /**
+     * Creates a new JSON array with a list.
+     *
+     * @param list the list containing all values in the JSON array
+     */
+    public JSONArray(List<Object> list) {
+    	this.list = list;
+	}
     
     /**
      * Retrieves the value at the specified index.
@@ -292,11 +302,42 @@ public class JSONArray extends JSON {
     }
     
     /**
-     * Returns a list representation of the JSON array.
+     * Returns the list representation of the JSON array.
      *
-     * @return a list containing all values in the JSON array
+     * @return the list containing all values in the JSON array
      */
-    public List<Object> toList() {
+    public List<Object> getList() {
         return list;
     }
+    
+    /**
+     * Returns an iterator that iterates over the JSON array.
+     * 
+     * @param <V> the type of the values
+     * @param nextFunc the function to get the next value
+     * @return an iterator that iterates over the JSON array
+     */
+	public <V> Iterable<V> iterate(Func2ObjInt<V, JSONArray> nextFunc) {
+		return () -> new JSONArrayIterator<>(nextFunc);
+	}
+	
+	protected class JSONArrayIterator<V> implements Iterator<V> {
+		
+		private final Func2ObjInt<V, JSONArray> nextFunc;
+		private int index = 0;
+		
+		public JSONArrayIterator(Func2ObjInt<V, JSONArray> nextFunc) {
+			this.nextFunc = nextFunc;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return index + 1 < size();
+		}
+		
+		@Override
+		public V next() {
+			return nextFunc.invoke(JSONArray.this, index++);
+		}
+	}
 }

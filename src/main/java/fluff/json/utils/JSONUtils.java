@@ -1,6 +1,9 @@
 package fluff.json.utils;
 
+import fluff.functions.gen.Func;
+import fluff.json.JSONArray;
 import fluff.json.JSONException;
+import fluff.json.JSONObject;
 import fluff.json.converter.JSONConverters;
 import fluff.json.deserializer.AbstractJSONReader;
 import fluff.json.deserializer.JSONParser;
@@ -45,12 +48,14 @@ public class JSONUtils {
      * Deserializes JSON content from the provided {@link AbstractJSONReader}.
      *
      * @param <V> the type of the deserialized value
+     * @param objectFunc the function to create a new JSON object
+     * @param arrayFunc the function to create a new JSON array
      * @param in the JSON reader to read the serialized value from
      * @return the deserialized value, or null if deserialization fails
      */
-    public static <V> V deserialize(AbstractJSONReader in) {
+    public static <V> V deserialize(Func<JSONObject> objectFunc, Func<JSONArray> arrayFunc, AbstractJSONReader in) {
         try {
-            JSONParser parser = new JSONParser(in);
+            JSONParser parser = new JSONParser(objectFunc, arrayFunc, in);
             return (V) parser.parse();
         } catch (JSONException e) {}
         return null;

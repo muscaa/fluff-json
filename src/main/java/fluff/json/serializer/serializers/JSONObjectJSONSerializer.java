@@ -13,6 +13,6 @@ public class JSONObjectJSONSerializer implements JSONSerializer<JSONObject> {
     
     @Override
     public void serializeJSON(JSONObject value, AbstractJSONWriter out) {
-        JSONConverters.MAP.serializeJSON(value.toMap(), out);
+        JSONConverters.MAP.serializeJSON(value.getMap(), out);
     }
 }

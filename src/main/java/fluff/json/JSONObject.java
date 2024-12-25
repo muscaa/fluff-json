@@ -1,8 +1,9 @@
 package fluff.json;
 
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import fluff.functions.gen.obj.obj.Func2;
 import fluff.json.deserializer.JSONDeserializer;
 import fluff.json.deserializer.readers.StringJSONReader;
 import fluff.json.serializer.AbstractJSONWriter;
@@ -15,7 +16,16 @@ import fluff.json.serializer.writers.InlineJSONWriter;
  */
 public class JSONObject extends JSON {
     
-    private final Map<String, Object> map = new HashMap<>();
+    protected final Map<String, Object> map;
+    
+    /**
+	 * Creates a new JSON object with a map.
+	 *
+	 * @param map the map containing all key-value pairs in the JSON object 
+     */
+	public JSONObject(Map<String, Object> map) {
+		this.map = map;
+	}
     
     /**
      * Retrieves the value associated with the specified key.
@@ -227,11 +237,61 @@ public class JSONObject extends JSON {
     }
     
     /**
-     * Returns a map representation of the JSON object.
+     * Returns the map representation of the JSON object.
      *
-     * @return a map containing all key-value pairs in the JSON object
+     * @return the map containing all key-value pairs in the JSON object
      */
-    public Map<String, Object> toMap() {
+    public Map<String, Object> getMap() {
         return map;
     }
+    
+    /**
+     * Returns an iterator that iterates over the JSON object.
+     * 
+     * @param <V> the type of the values
+     * @param nextFunc the function to get the next value
+     * @return an iterator that iterates over the JSON object
+     */
+	public <V> Iterable<Map.Entry<String, V>> iterate(Func2<V, JSONObject, String> nextFunc) {
+		return () -> new JSONObjectIterator<>(nextFunc);
+	}
+	
+	protected class JSONObjectIterator<V> implements Iterator<Map.Entry<String, V>> {
+		
+		private final Func2<V, JSONObject, String> nextFunc;
+		private Iterator<String> keys;
+		
+		public JSONObjectIterator(Func2<V, JSONObject, String> nextFunc) {
+			this.nextFunc = nextFunc;
+			this.keys = map.keySet().iterator();
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return keys.hasNext();
+		}
+		
+		@Override
+		public Map.Entry<String, V> next() {
+			String key = keys.next();
+			V value =  nextFunc.invoke(JSONObject.this, key);
+			
+			return new Map.Entry<String, V>() {
+				@Override
+				public String getKey() {
+					return key;
+				}
+				
+				@Override
+				public V getValue() {
+					return value;
+				}
+				
+				@Override
+				public V setValue(V value) {
+					return null;
+				}
+			};
+		}
+	}
 }

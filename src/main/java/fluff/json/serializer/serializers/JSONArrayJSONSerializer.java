@@ -13,6 +13,6 @@ public class JSONArrayJSONSerializer implements JSONSerializer<JSONArray> {
     
     @Override
     public void serializeJSON(JSONArray value, AbstractJSONWriter out) {
-        JSONConverters.COLLECTION.serializeJSON(value.toList(), out);
+        JSONConverters.COLLECTION.serializeJSON(value.getList(), out);
     }
 }
